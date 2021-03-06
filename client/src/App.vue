@@ -9,6 +9,7 @@
     <img alt="Vue logo" src="./assets/logo.png"> -->
     <HelloWorld msg="Welcome to Your Vue.js App 1"/>
     <textarea type="textarea" v-model="debugText">
+    <div id="noteDocOutline"></div>
       
     </textarea>
   </div>
@@ -42,7 +43,11 @@ export default {
       const headers = {"Content-Type":"text/plain"}
       //const headers = {}
       axios.get('http://localhost:5010/api/parse', params_obj, headers)
-      .then(response => (this.debugText = response.data))
+      .then(function(response) {
+        console.log(response)
+      })
+      //.then(response => (this.debugText = response.data))
+      // .then(response => (#noteDocOutline.setHTML(response.data)))
     }
   }
 }
