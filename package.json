@@ -18,5 +18,8 @@
   "homepage": "https://github.com/metathinker1/TPalNoteDocViewer#readme",
   "devDependencies": {
     "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "sl-vue-tree": "^1.8.5"
   }
 }

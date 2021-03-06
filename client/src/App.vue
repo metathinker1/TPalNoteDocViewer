@@ -7,28 +7,45 @@
     <!-- <p>Directory is: {{directory}}</p> -->
     <!--
     <img alt="Vue logo" src="./assets/logo.png"> -->
-    <HelloWorld msg="Welcome to Your Vue.js App 1"/>
+    <!-- <HelloWorld msg="Welcome to Your Vue.js App 1"/> -->
     <textarea type="textarea" v-model="debugText">
     <div id="noteDocOutline"></div>
-      
     </textarea>
+    <sl-vue-tree id="file-tree" v-model="nodes" @nodeclick="nodeClick"/>
   </div>
 </template>
 
+<script src="sl-vue-tree.js"></script>
+
 <script>
 // LL: this is not necessary: import Vue from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
 import axios from 'axios'
+import SLVueTree from 'sl-vue-tree'
+
+var nodes = [
+  {title: 'Item1', isLeaf: true},
+  {title: 'Item2', isLeaf: true, data: { visible: false }},
+  {title: 'Folder1'},
+  {
+    title: 'Folder2', isExpanded: true, children: [
+      {title: 'Item3', isLeaf: true},
+      {title: 'Item4', isLeaf: true}
+    ]
+  }
+];
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    // HelloWorld
+    SLVueTree
   },
   data() {
     return {
       directory: '',
-      debugText: ''
+      debugText: '',
+      nodes: nodes
     }
   },
   methods: {
@@ -37,6 +54,7 @@ export default {
       alert('clicked')
     },
     getNoteDocument: function() {
+      console.log("getNoteDocument")
       // const params = {dir: {{directoryName}}, file: {{fileName}}}
       const params_obj = {params: {dir: 'AppDev', file: 'AppDevFW.Vue.nodoc'}}
       // https://stackoverflow.com/questions/45578844/how-to-set-header-and-options-in-axios
@@ -48,6 +66,9 @@ export default {
       })
       //.then(response => (this.debugText = response.data))
       // .then(response => (#noteDocOutline.setHTML(response.data)))
+    },
+    nodeClick(node, event) {
+      console.log("nodeClick: " + event + " | " + node.isLeaf + ", " + node.title )
     }
   }
 }
