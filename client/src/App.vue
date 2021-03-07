@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <p> some text </p>
-    <button v-on:click="doSomething">Click Me!</button>
+    <input v-model.lazy="directoryName" placeholder="">
+    <input v-model.lazy="fileName" placeholder="" size="50">
     <button v-on:click="getNoteDocument">Get Note Document 1</button>
     <input v-model="directory" placeholder="directory">
     <!-- <p>Directory is: {{directory}}</p> -->
@@ -44,25 +45,26 @@ export default {
   data() {
     return {
       directory: '',
+      directoryName: '',
+      fileName: '',
       debugText: '',
       nodes: nodes
     }
   },
   methods: {
-    doSomething: function() {
-      console.log('doSomething')
-      alert('clicked')
-    },
     getNoteDocument: function() {
       console.log("getNoteDocument")
-      // const params = {dir: {{directoryName}}, file: {{fileName}}}
-      const params_obj = {params: {dir: 'AppDev', file: 'AppDevFW.Vue.nodoc'}}
+      console.log(this.directoryName)
+      const params_obj = {params: {dir: this.directoryName, file: this.fileName}}
+      // const params_obj = {params: {dir: 'AppDev', file: 'AppDevFW.Vue.nodoc'}}
       // https://stackoverflow.com/questions/45578844/how-to-set-header-and-options-in-axios
       const headers = {"Content-Type":"text/plain"}
       //const headers = {}
       axios.get('http://localhost:5010/api/parse', params_obj, headers)
       .then(function(response) {
         console.log(response)
+        var win = window.open("", "Title")
+        win.document.body.innerHTML = response.data
       })
       //.then(response => (this.debugText = response.data))
       // .then(response => (#noteDocOutline.setHTML(response.data)))
