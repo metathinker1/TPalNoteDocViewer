@@ -63,7 +63,10 @@ export default {
       axios.get('http://localhost:5010/api/parse', params_obj, headers)
       .then(function(response) {
         console.log(response)
-        var win = window.open("", "Title")
+        var parser = new DOMParser();
+        var xmlDoc = parser.parseFromString(response.data, 'text/xml')
+        var title = xmlDoc.getElementsByTagName('title')
+        var win = window.open("", title)
         win.document.body.innerHTML = response.data
       })
       //.then(response => (this.debugText = response.data))
