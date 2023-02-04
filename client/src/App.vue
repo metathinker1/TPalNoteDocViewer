@@ -3,7 +3,8 @@
     <p> some text </p>
     <input v-model.lazy="directoryName" placeholder="">
     <input v-model.lazy="fileName" placeholder="" size="50">
-    <button v-on:click="getNoteDocument">Get Note Document 1</button>
+    <button v-on:click="getNoteDocument">Get Note Document JSON</button>
+    <button v-on:click="getNoteDocumentHTML">Get Note Document HTML</button>
     <input v-model="directory" placeholder="directory">
     <!-- <p>Directory is: {{directory}}</p> -->
     <!--
@@ -23,6 +24,7 @@
 // import HelloWorld from './components/HelloWorld.vue'
 import axios from 'axios'
 import SLVueTree from 'sl-vue-tree'
+import NoteDocument from './note-document'
 
 var nodes = [
   {title: 'Item1', isLeaf: true},
@@ -53,14 +55,38 @@ export default {
   },
   methods: {
     getNoteDocument: function() {
-      console.log("getNoteDocument")
+      console.log("getNoteDocument HTML")
       console.log(this.directoryName)
-      const params_obj = {params: {dir: this.directoryName, file: this.fileName}}
+      const params_obj = {params: {dir: this.directoryName, file: this.fileName, fmt: 'JSON'}}
       // const params_obj = {params: {dir: 'AppDev', file: 'AppDevFW.Vue.nodoc'}}
       // https://stackoverflow.com/questions/45578844/how-to-set-header-and-options-in-axios
       const headers = {"Content-Type":"text/plain"}
       //const headers = {}
-      axios.get('http://localhost:5010/api/parse', params_obj, headers)
+      //axios.get('http://localhost:5010/api/parse', params_obj, headers)
+      axios.get('http://localhost:5064/thoughtpalsvc/notedoc', params_obj, headers)
+      .then(function(response) {
+        console.log(response)
+        const noteDoc = new NoteDocument(response.data)
+        // const outlineHTML = noteDoc.getOutlineHTML()
+        const noteDocHTML = noteDoc.getDualViewPage()
+        const title = response.data.directoryName + ':' + response.data.fileName
+        const win = window.open("", title)
+        // win.document.body.innerHTML = outlineHTML
+        win.document.body.innerHTML = noteDocHTML
+      })
+      //.then(response => (this.debugText = response.data))
+      // .then(response => (#noteDocOutline.setHTML(response.data)))
+    },
+    getNoteDocumentHTML: function() {
+      console.log("getNoteDocument HTML")
+      console.log(this.directoryName)
+      const params_obj = {params: {dir: this.directoryName, file: this.fileName, fmt: 'HTML'}}
+      // const params_obj = {params: {dir: 'AppDev', file: 'AppDevFW.Vue.nodoc'}}
+      // https://stackoverflow.com/questions/45578844/how-to-set-header-and-options-in-axios
+      const headers = {"Content-Type":"text/plain"}
+      //const headers = {}
+      //axios.get('http://localhost:5010/api/parse', params_obj, headers)
+      axios.get('http://localhost:5064/thoughtpalsvc/notedoc', params_obj, headers)
       .then(function(response) {
         console.log(response)
         var parser = new DOMParser();
@@ -71,6 +97,21 @@ export default {
       })
       //.then(response => (this.debugText = response.data))
       // .then(response => (#noteDocOutline.setHTML(response.data)))
+    },
+    testCORS: function() {
+      const params_obj = {params: {}}
+      const headers = {"Content-Type":"text/plain"}
+      axios.get('http://localhost:5063/dataservice/parse', params_obj, headers)
+      .then(function(response) {
+        // window.alert('Response: ' + response)
+        console.log(response)
+        var parser = new DOMParser();
+        var xmlDoc = parser.parseFromString(response.data, 'text/xml')
+        var title = xmlDoc.getElementsByTagName('title')
+        var win = window.open("", title)
+        win.document.body.innerHTML = response.data
+      })
+
     },
     nodeClick(node, event) {
       console.log("nodeClick: " + event + " | " + node.isLeaf + ", " + node.title )
